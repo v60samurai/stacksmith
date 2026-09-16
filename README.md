@@ -8,7 +8,7 @@ Stacksmith scans your repo, understands what you are building, researches the cu
 
 It is a skill for [Claude Code](https://code.claude.com) and [Codex](https://developers.openai.com/codex). It reads your repository first, then researches current frameworks, libraries, infrastructure and developer tooling, tells you what to keep, add, replace, upgrade, remove or avoid, and waits for your approval before changing anything.
 
-![version](https://img.shields.io/badge/version-0.1.0-2b2b2b) ![license](https://img.shields.io/badge/license-MIT-2b2b2b) ![Claude Code plugin](https://img.shields.io/badge/Claude_Code-plugin-d97a3b) ![Codex skill](https://img.shields.io/badge/Codex-skill-d97a3b)
+![version](https://img.shields.io/badge/version-0.2.0-2b2b2b) ![license](https://img.shields.io/badge/license-MIT-2b2b2b) ![Claude Code plugin](https://img.shields.io/badge/Claude_Code-plugin-d97a3b) ![Codex skill](https://img.shields.io/badge/Codex-skill-d97a3b)
 
 ## Why it exists
 
@@ -162,6 +162,16 @@ Stacksmith can reason across the whole software-development stack, and investiga
 - **Quality.** Testing at every level, linting, static analysis, architecture boundaries, security, reliability patterns.
 - **Developer experience.** Package managers, runtimes, Git workflows, code search, agent tooling, MCP servers, codemods.
 - **Specialised systems.** Documents, OCR, images, video, audio, maps and geospatial, scraping, data pipelines.
+
+## Frameworks, protocols and emerging technology
+
+Stacksmith does not stop at libraries. When the decision matters, it compares whole application frameworks across ecosystems (FastAPI or Django, Express or Hono, Next.js server or a separate service, Python or another runtime) from current research, not a fixed list, and keeps the existing framework unless the improvement clearly outweighs the migration.
+
+It also keeps a first-class research domain for emerging AI infrastructure: agent interoperability standards (MCP, A2A, Agent Client Protocol), agent runtimes, model infrastructure, context engineering and evaluation. Because that area moves fast, anything in it is re-checked against official sources on every run and dated; cached research narrows the search and never decides.
+
+Before recommending any of it, Stacksmith names the kind of problem (framework, protocol, library, platform or developer tool) and compares only within that kind, and for AI projects answers fourteen architecture questions first: is one model call enough, is structured output needed, are tools needed, is MCP useful or is direct integration simpler, are multiple agents really needed, and so on. MCP, A2A, RAG, vector databases, memory systems, agent frameworks and workflow engines all need a "yes" with evidence; the presence of AI is not one.
+
+A dated technology radar (ADOPT, TRIAL, WATCH, HOLD, always with a scope and a reason) records what research found, and goes stale on purpose. See [docs/how-it-works.md](docs/how-it-works.md#frameworks-protocols-and-emerging-technology).
 
 ## Decisions
 

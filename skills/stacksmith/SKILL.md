@@ -68,11 +68,11 @@ Read `references/understand.md`. Separate decisions, conventions, requirements, 
 
 ## Phase 3: RESEARCH
 
-Read `references/research.md`. Research the categories the router named, current state only, cached where fresh. Candidates go to `research.md` with source, version, date and maintenance status. Done when every in-scope category has either a verified candidate set or the note "no change worth researching".
+Read `references/research.md`, and `references/frameworks-and-emerging.md` when the router lists it (framework, runtime or emerging-AI categories). Research the categories the router named, current state only, cached where fresh; the router's `volatileCategories` are re-checked against current sources on every run and dated. Candidates go to `research.md` with source, version, date and maintenance status. Done when every in-scope category has either a verified candidate set or the note "no change worth researching".
 
 ## Phase 4: DECIDE
 
-Read `references/decide.md`. Write `recommendations.json`, one entry per relevant technology, decision from KEEP, ADD, REPLACE, UPGRADE, REMOVE, WATCH, AVOID, BUILD, GLOBAL. Then lint:
+Read `references/decide.md`. Write `recommendations.json`, one entry per relevant technology with its `kind` (framework, protocol, library, platform, devtool), decision from KEEP, ADD, REPLACE, UPGRADE, REMOVE, WATCH, AVOID, BUILD, GLOBAL. With the `ai` signal, the fourteen AI architecture answers go in the file too. Update the radar for anything researched. Then lint:
 
 ```bash
 node $STACKSMITH/scripts/lint.mjs <dir>/recommendations.json

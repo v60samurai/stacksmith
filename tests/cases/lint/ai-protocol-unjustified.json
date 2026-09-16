@@ -1,0 +1,119 @@
+{
+ "project": "support-bot",
+ "mode": "AUDIT",
+ "age": "BROWNFIELD",
+ "signals": [
+  "ai",
+  "backend"
+ ],
+ "recommendations": [
+  {
+   "id": "r1",
+   "area": "Structured output",
+   "kind": "library",
+   "current": "regex over free text",
+   "recommendation": "AI SDK generateObject with the existing Zod schema",
+   "decision": "ADD",
+   "install_scope": "CONFIGURATION",
+   "requirement": "q2: the reply carries a category enum parsed today by regex (src/ai/reply.ts)",
+   "why": "already supported by the installed SDK",
+   "cost_impact": "none",
+   "performance_impact": "none",
+   "risk": "low",
+   "confidence": "high",
+   "score": {
+    "fit": 5,
+    "simplicity": 5,
+    "reliability": 4,
+    "performance": 4,
+    "cost": 5,
+    "dx": 4,
+    "security": 4,
+    "maturity": 4,
+    "maintainability": 5,
+    "lock_in": 4
+   },
+   "evidence": [
+    {
+     "source": "https://ai-sdk.dev/docs",
+     "checked": "2026-09-16"
+    }
+   ]
+  },
+  {
+   "id": "r9",
+   "area": "Agent interoperability",
+   "kind": "protocol",
+   "current": "none",
+   "recommendation": "A2A between the support bot and the billing bot",
+   "decision": "ADD",
+   "install_scope": "RUNTIME_DEPENDENCY",
+   "requirement": "the product has two bots (src/bots/)",
+   "trigger": "src/bots/",
+   "why": "agents should interoperate",
+   "cost_impact": "SDK plus auth",
+   "performance_impact": "one hop",
+   "risk": "medium",
+   "confidence": "medium",
+   "evidence": [
+    {
+     "source": "https://a2a-protocol.org",
+     "checked": "2026-09-16"
+    }
+   ]
+  },
+  {
+   "id": "r2",
+   "area": "Agent interoperability (A2A)",
+   "kind": "protocol",
+   "current": "none",
+   "recommendation": "none",
+   "decision": "AVOID",
+   "install_scope": "RUNTIME_DEPENDENCY",
+   "why": "q5 and q6 are no: one assistant, no independent agents",
+   "cost_impact": "none",
+   "performance_impact": "none",
+   "risk": "low",
+   "confidence": "high"
+  },
+  {
+   "id": "r3",
+   "area": "LLM SDK",
+   "kind": "framework",
+   "slot": "llm-sdk",
+   "current": "Vercel AI SDK 5",
+   "recommendation": "Vercel AI SDK 5",
+   "decision": "KEEP",
+   "install_scope": "RUNTIME_DEPENDENCY",
+   "why": "fit",
+   "cost_impact": "none",
+   "performance_impact": "none",
+   "risk": "low",
+   "confidence": "high",
+   "alternative_considered": "provider SDK directly: loses the provider swap the PRD asks for"
+  },
+  {
+   "id": "r10",
+   "area": "Backend framework",
+   "kind": "engine",
+   "current": "Express 4",
+   "recommendation": "Hono",
+   "decision": "REPLACE",
+   "install_scope": "RUNTIME_DEPENDENCY",
+   "improvement": "faster",
+   "migration_cost": "40 routes",
+   "removes": "Express",
+   "why": "Hono benchmarks better",
+   "cost_impact": "none",
+   "performance_impact": "lower p50",
+   "risk": "medium",
+   "confidence": "medium",
+   "evidence": [
+    {
+     "source": "https://hono.dev",
+     "checked": "2026-09-16"
+    }
+   ]
+  }
+ ]
+}

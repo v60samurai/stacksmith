@@ -43,6 +43,12 @@ Each candidate is scored 1 to 5 on ten criteria, weighted by priority (fit 10, s
 
 `research-cache.mjs` keeps one JSON line per tool at `~/.agents/stacksmith/research-cache.jsonl` (override with `STACKSMITH_CACHE`), shared by Claude Code and Codex. Entries are fresh for 14 days, 7 for volatile tools. Anything whose freshness would change a decision is re-checked regardless.
 
+## Frameworks, protocols and emerging technology
+
+`references/frameworks-and-emerging.md` loads whenever the router lists `application-framework`, `runtime-fit`, `ai-architecture` or an `emerging-ai:*` category. It defines the five kinds (framework, protocol, library, platform, devtool) that every entry must name, the framework comparison questions and what evidence decides each, the emerging AI research domain (agent interop, agent runtimes, model infrastructure, context engineering, evaluation), the checklist for evaluating an interoperability protocol, the fourteen AI architecture questions the linter requires when the `ai` signal is set, the radar, and the freshness rules. The router marks volatile categories in `volatileCategories`; their tools use the 7-day cache window and 14-day radar window.
+
+`scripts/radar.mjs` keeps the radar at `~/.agents/stacksmith/radar.jsonl` (override with `STACKSMITH_RADAR`): one line per technology and scope, with status, reason, source and check date; `get` exits 3 when stale, `list --stale` shows what needs re-checking.
+
 ## Optional helpers
 
 See `skills/stacksmith/references/integrations.md`. None are required.

@@ -43,6 +43,7 @@ Score each candidate 1 to 5 on the ten criteria. Weighted total uses the priorit
 - One tool per slot. Two live entries (KEEP or ADD) in the same slot (orm, migrations, logger, http-client, test-runner, di, scheduler, observability, state, workflow, validation, forms) fail.
 - Every ADD, REPLACE, UPGRADE and REMOVE needs at least one `evidence` source with a date.
 - A brownfield audit needs at least one KEEP with `alternative_considered`, so the report's "do not change" section is never empty.
+- A protocol (MCP, A2A, Agent Client Protocol) is never ADDed without `interop_requirement`; with the `ai` signal all fourteen AI architecture questions are answered.
 
 ## Entry shape (`recommendations.json`)
 
@@ -67,7 +68,7 @@ Score each candidate 1 to 5 on the ten criteria. Weighted total uses the priorit
 }
 ```
 
-Install scopes: GLOBAL, RUNTIME_DEPENDENCY, DEV_DEPENDENCY, CI, INFRASTRUCTURE, CONFIGURATION, SKILL, MCP, INTERNAL_IMPLEMENTATION.
+Install scopes: GLOBAL, RUNTIME_DEPENDENCY, DEV_DEPENDENCY, CI, INFRASTRUCTURE, CONFIGURATION, SKILL, MCP, INTERNAL_IMPLEMENTATION. Kinds: framework, protocol, library, platform, devtool (`references/frameworks-and-emerging.md`). A protocol ADD carries `interop_requirement`. With the `ai` signal, the document carries `ai_architecture: { q1: "...", ..., q14: "..." }`, the fourteen answers with evidence.
 
 ## Second opinion before REPORT
 
@@ -75,4 +76,4 @@ Any REPLACE, any architecture change, and any ADD in the premature list gets a c
 
 ## Anti-patterns the reviewer should name if you commit them
 
-Dependency collecting. Framework churn. Rewriting working infrastructure for marginal gains. Adopting a tool because it is new, popular or well benchmarked. Two tools for one job. Two systems of record. Lock-in without a reason. Premature distribution or microservices. Redis "for caching later". A vector database because the project uses AI. An agent framework where three functions suffice. A workflow engine for a simple state machine. Abstractions before requirements. Replacing a convention without knowing why it exists. Optimising a synthetic number while making operations harder.
+Dependency collecting. Framework churn. Comparing a protocol with a framework or a library as if they were alternatives. MCP or A2A because the application contains agents. Rewriting working infrastructure for marginal gains. Adopting a tool because it is new, popular or well benchmarked. Two tools for one job. Two systems of record. Lock-in without a reason. Premature distribution or microservices. Redis "for caching later". A vector database because the project uses AI. An agent framework where three functions suffice. A workflow engine for a simple state machine. Abstractions before requirements. Replacing a convention without knowing why it exists. Optimising a synthetic number while making operations harder.

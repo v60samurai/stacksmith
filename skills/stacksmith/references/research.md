@@ -13,7 +13,7 @@ node $STACKSMITH/scripts/research-cache.mjs get <tool>            # FRESH, STALE
 node $STACKSMITH/scripts/research-cache.mjs put <tool> --version 5.2.1 --source "https://..." --status active --caveats "ESM only since v5"
 ```
 
-FRESH entries (14 days by default, 7 with `--volatile` for fast-moving AI tooling) are reused without a lookup. STALE and MISS trigger a lookup. Re-check regardless when freshness changes the decision: a pending major release, a maintainer change, a security advisory, or a version pin the project depends on.
+FRESH entries (14 days by default, 7 with `--volatile` for fast-moving AI tooling) are reused without a lookup. STALE and MISS trigger a lookup. Re-check regardless when freshness changes the decision: a pending major release, a maintainer change, a security advisory, or a version pin the project depends on. Every tool in one of the router's `volatileCategories` is `--volatile`, and for those a cache hit narrows the search but never replaces a dated check of the official source (`references/frameworks-and-emerging.md`, Freshness).
 
 ## Sources, in order of trust
 
@@ -41,4 +41,4 @@ Candidates:
 Verdict for DECIDE: <keep|add|replace|upgrade|remove|watch|avoid|build> because <one line>
 ```
 
-Then `put` each verified tool into the cache. Done when every in-scope category has a section.
+Then `put` each verified tool into the cache, and `radar.mjs set` its status with a scope and reason. Done when every in-scope category has a section.

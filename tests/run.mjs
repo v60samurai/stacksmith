@@ -20,7 +20,7 @@ process.stdout.write(r.stdout.split("\n").map((l) => "  " + l).join("\n") + "\n"
 ok("routing cases", r.status === 0);
 
 console.log("# lint (decision guardrails)");
-const LINT_EXPECT = { "add-almost-nothing": 0, "dependency-collecting": 1, "house-stack-weak-replace": 1, "justified-replacement": 0, "greenfield-web": 0, "stale-deps": 0, "malformed": 1 };
+const LINT_EXPECT = { "ai-architecture-answered": 0, "ai-protocol-unjustified": 1, "add-almost-nothing": 0, "dependency-collecting": 1, "house-stack-weak-replace": 1, "justified-replacement": 0, "greenfield-web": 0, "stale-deps": 0, "malformed": 1 };
 for (const [name, want] of Object.entries(LINT_EXPECT)) {
   const res = run("lint.mjs", [join(HERE, "cases", "lint", `${name}.json`)]);
   ok(`lint ${name} exits ${want}`, res.status === want, res.stdout.trim().split("\n").at(-1));
@@ -37,6 +37,23 @@ ok("add-almost-nothing has 1 ADD, 2 KEEP, 1 BUILD with CI scope", JSON.parse(an)
 ok("route.mjs --help exits 0", run("route.mjs", ["--help"]).status === 0);
 ok("cache get reports its path", JSON.parse(run("research-cache.mjs", ["get", "nothing"], { STACKSMITH_CACHE: "/tmp/x-stacksmith.jsonl" }).stdout).cache === "/tmp/x-stacksmith.jsonl");
 
+const ap = run("lint.mjs", [join(HERE, "cases", "lint", "ai-protocol-unjustified.json")]).stdout;
+ok("lint requires interop_requirement for a protocol ADD", /protocol ADD needs interop_requirement/.test(ap));
+ok("lint requires the 14 AI architecture answers when ai is set", /ai_architecture must answer all 14/.test(ap));
+ok("lint rejects an unknown kind", /kind must be one of/.test(ap));
+console.log("# technology radar");
+{
+  const radar = join(mkdtempSync(join(tmpdir(), "stacksmith-radar-")), "radar.jsonl");
+  const renv = { STACKSMITH_RADAR: radar };
+  ok("radar get miss exits 4", run("radar.mjs", ["get", "A2A"], renv).status === 4);
+  ok("radar set without scope refused", run("radar.mjs", ["set", "A2A", "--status", "TRIAL", "--reason", "x"], renv).status !== 0);
+  ok("radar set with bad status refused", run("radar.mjs", ["set", "A2A", "--status", "MAYBE", "--scope", "s", "--reason", "x"], renv).status !== 0);
+  ok("radar set ok", run("radar.mjs", ["set", "A2A", "--status", "TRIAL", "--scope", "cross-system agents", "--reason", "neutral governance", "--volatile"], renv).status === 0);
+  ok("radar get fresh exits 0", run("radar.mjs", ["get", "A2A"], renv).status === 0);
+  ok("radar status can differ by scope", run("radar.mjs", ["set", "FastAPI", "--status", "ADOPT", "--scope", "python api services", "--reason", "fit"], renv).status === 0 && run("radar.mjs", ["set", "FastAPI", "--status", "HOLD", "--scope", "cpu-bound workloads", "--reason", "wrong runtime"], renv).status === 0 && JSON.parse(run("radar.mjs", ["get", "fastapi"], renv).stdout).entries.length === 2);
+  ok("volatile radar entry older than 14 days is stale", run("radar.mjs", ["set", "MCP", "--status", "ADOPT", "--scope", "tools", "--reason", "fit", "--volatile", "--checked", "2026-08-20"], renv).status === 0 && run("radar.mjs", ["get", "MCP"], renv).status === 3);
+  ok("radar list --stale shows only stale", (() => { const o = run("radar.mjs", ["list", "--stale"], renv).stdout; return o.includes("MCP") && !o.includes("A2A"); })());
+}
 console.log("# approval gate");
 const dir = mkdtempSync(join(tmpdir(), "stacksmith-gate-"));
 cpSync(join(HERE, "cases", "lint", "justified-replacement.json"), join(dir, "recommendations.json"));
@@ -78,14 +95,14 @@ ok("case-insensitive lookup", run("research-cache.mjs", ["get", "ZOD"], env).sta
 
 console.log("# skill files");
 const root = join(HERE, "..", "skills", "stacksmith");
-for (const f of ["SKILL.md", "references/scan.md", "references/understand.md", "references/research.md", "references/decide.md", "references/report.md", "references/apply-verify.md", "references/document.md"]) ok(`exists ${f}`, existsSync(join(root, f)));
+for (const f of ["SKILL.md", "references/frameworks-and-emerging.md", "references/scan.md", "references/understand.md", "references/research.md", "references/decide.md", "references/report.md", "references/apply-verify.md", "references/document.md"]) ok(`exists ${f}`, existsSync(join(root, f)));
 const skill = readFileSync(join(root, "SKILL.md"), "utf8");
 ok("SKILL.md has frontmatter name", /^---\nname: stacksmith\n/.test(skill));
 ok("SKILL.md description under 1024 chars", (skill.match(/description: (.*)\n/) || ["", ""])[1].length < 1024);
 ok("SKILL.md names the gate before APPLY", skill.indexOf("## Phase 6: GATE") < skill.indexOf("## Phase 7: APPLY"));
 ok("SKILL.md states no changes before approval", /installs nothing, uninstalls nothing/.test(skill));
 ok("SKILL.md has no em dash", !skill.includes("—"));
-for (const f of ["scan.md", "understand.md", "research.md", "decide.md", "report.md", "apply-verify.md", "document.md"]) ok(`${f} has no em dash`, !readFileSync(join(root, "references", f), "utf8").includes("—"));
+for (const f of ["frameworks-and-emerging.md", "scan.md", "understand.md", "research.md", "decide.md", "report.md", "apply-verify.md", "document.md"]) ok(`${f} has no em dash`, !readFileSync(join(root, "references", f), "utf8").includes("—"));
 ok("references/integrations.md exists", existsSync(join(root, "references", "integrations.md")));
 ok("SKILL.md carries no personal paths", !/~\/\.claude\/references|Harshit/.test(skill));
 console.log("# symlinked invocation");

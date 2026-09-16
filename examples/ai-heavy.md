@@ -6,6 +6,8 @@
 
 **Route.** AUDIT limited to AI categories, BROWNFIELD, signals `ai, retrieval, multi-tenant`. Categories: LLM SDK, structured output, LLM observability, LLM evals, prompt management, RAG, embeddings, vector search, reranking, chunking.
 
+**AI architecture questions (constraints.md).** One model call per turn is enough (q1 yes); structured output needed for the category enum (q2 yes); two in-process tools (q3 yes); MCP not useful, both tools have one caller (q4 no); one assistant, no delegation (q5 no, q6 no); no durability, turns finish in seconds (q7 no); history already in Postgres (q8 no); retrieval required by PRD 6 (q9 yes); evals before production, prompts change weekly (q10 yes); per-tenant cost and latency (q11); the SDK's provider interface (q12); retry once then a canned reply (q13); human routing stays rule-based (q14).
+
 **Recommendations.**
 
 | Id | Area | Current | Recommendation | Decision | Scope | Why |

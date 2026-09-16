@@ -14,7 +14,9 @@ export const SLOTS = ["orm", "migrations", "logger", "http-client", "test-runner
 export const CRITERIA = ["fit", "simplicity", "reliability", "performance", "cost", "dx", "security", "maturity", "maintainability", "lock_in"];
 export const WEIGHTS = { fit: 10, simplicity: 9, reliability: 8, performance: 7, cost: 6, dx: 5, security: 4, maturity: 3, maintainability: 2, lock_in: 1 };
 const SPECULATIVE = /\b(might|may need|in case|just in case|future[- ]proof|eventually|someday|down the line|later on|we could|nice to have|when we scale|if we grow)\b/i;
-const PREMATURE = /\b(redis|memcached|cache layer|caching layer|queue|kafka|rabbitmq|sqs|pub\/?sub|vector (db|database|store)|pinecone|weaviate|qdrant|milvus|workflow engine|temporal|inngest|trigger\.dev|agent framework|langchain|langgraph|crewai|autogen|microservice|kubernetes|k8s|service mesh|istio|launchdarkly|feature[- ]flag saas|event bus|cqrs|event sourcing)\b/i;
+export const KINDS = ["framework", "protocol", "library", "platform", "devtool"];
+const PROTOCOL = /\b(a2a|agent2agent|agent client protocol|\bacp\b|mcp|model context protocol)\b/i;
+const PREMATURE = /\b(a2a|agent2agent|agent client protocol|mcp server|mcp|model context protocol|memory system|agent memory|mem0|zep|redis|memcached|cache layer|caching layer|queue|kafka|rabbitmq|sqs|pub\/?sub|vector (db|database|store)|pinecone|weaviate|qdrant|milvus|workflow engine|temporal|inngest|trigger\.dev|agent framework|langchain|langgraph|crewai|autogen|microservice|kubernetes|k8s|service mesh|istio|launchdarkly|feature[- ]flag saas|event bus|cqrs|event sourcing)\b/i;
 const NEEDS_EVIDENCE = new Set(["ADD", "REPLACE", "UPGRADE", "REMOVE"]);
 const REQUIRED = ["id", "area", "current", "recommendation", "decision", "install_scope", "why", "cost_impact", "performance_impact", "risk", "confidence"];
 
@@ -59,12 +61,15 @@ export function lint(doc) {
       for (const e of ev) if (!e.source || !e.checked) errors.push(`${tag} evidence entries need source and checked date`);
     }
 
+    if (r.kind !== undefined && !KINDS.includes(r.kind)) errors.push(`${tag} kind must be one of ${KINDS.join(", ")}`);
+    if (r.kind === undefined && ["ADD", "REPLACE"].includes(r.decision)) warnings.push(`${tag} no kind; ADD and REPLACE should name framework|protocol|library|platform|devtool`);
     if (r.decision === "ADD") {
       if (!r.requirement) errors.push(`${tag} ADD needs a requirement`);
       else if (SPECULATIVE.test(r.requirement)) errors.push(`${tag} ADD requirement is speculative: "${r.requirement}"`);
       const text = `${r.area} ${r.recommendation}`;
       if (PREMATURE.test(text) && !r.trigger) errors.push(`${tag} ADD on the premature list needs a trigger (repository path or document quote)`);
       if (r.confidence === "low") warnings.push(`${tag} ADD with low confidence; consider WATCH`);
+      if (PROTOCOL.test(`${r.area} ${r.recommendation}`) && !r.interop_requirement) errors.push(`${tag} a protocol ADD needs interop_requirement: which independent systems must talk, and why direct API or tool integration is not simpler`);
     }
 
     if (r.decision === "REPLACE") {
@@ -96,6 +101,11 @@ export function lint(doc) {
     }
   }
 
+  if (signals.includes("ai")) {
+    const aa = doc.ai_architecture;
+    const answered = aa && typeof aa === "object" ? Object.keys(aa).filter((k) => aa[k] && String(aa[k]).trim()).length : 0;
+    if (answered < 14) errors.push(`ai signal set: ai_architecture must answer all 14 questions (q1..q14) with evidence; ${answered} answered`);
+  }
   const counts = Object.fromEntries(DECISIONS.map((d) => [d, recs.filter((r) => r.decision === d).length]));
   if (age === "BROWNFIELD" && !recs.some((r) => r.decision === "KEEP" && r.alternative_considered)) {
     errors.push("brownfield needs at least one KEEP with alternative_considered (the Do not change section)");

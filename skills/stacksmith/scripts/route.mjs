@@ -13,13 +13,15 @@ export const AGES = ["GREENFIELD", "BROWNFIELD", "UNKNOWN"];
 export const EXECUTIONS = ["FULL", "RECOMMEND-ONLY", "APPLY-ONLY", "DOCUMENT-ONLY"];
 
 export const ALWAYS = ["runtime", "package-manager", "testing", "lint-format", "ci-cd", "agent-legibility"];
+export const EMERGING_AI = ["emerging-ai:agent-interop", "emerging-ai:agent-runtime", "emerging-ai:model-infrastructure", "emerging-ai:context-engineering", "emerging-ai:evaluation"];
+export const VOLATILE = ["llm-sdk", "structured-output", "llm-observability", "llm-evals", "prompt-management", "rag", "embeddings", "vector-search", "reranking", "chunking", "agent-orchestration", "durable-workflows", "agent-memory", ...EMERGING_AI];
 
 export const SIGNALS = {
-  ai: { meaning: "LLM or agent calls in code or requirements", categories: ["llm-sdk", "structured-output", "llm-observability", "llm-evals", "prompt-management"] },
+  ai: { meaning: "LLM or agent calls in code or requirements", categories: ["llm-sdk", "structured-output", "llm-observability", "llm-evals", "prompt-management", "ai-architecture", ...EMERGING_AI] },
   retrieval: { meaning: "a documented retrieval or search-over-documents requirement", categories: ["rag", "embeddings", "vector-search", "reranking", "chunking"] },
   "multi-agent": { meaning: "documented need for several cooperating agents or long-running agent workflows", categories: ["agent-orchestration", "durable-workflows", "agent-memory"] },
-  frontend: { meaning: "a browser UI", categories: ["frontend-framework", "ui-kit", "state", "forms", "bundler", "e2e", "visual-regression", "web-performance"] },
-  backend: { meaning: "an HTTP or RPC service", categories: ["backend-framework", "api-style", "validation", "auth", "rate-limiting", "retries-timeouts"] },
+  frontend: { meaning: "a browser UI", categories: ["application-framework", "frontend-framework", "ui-kit", "state", "forms", "bundler", "e2e", "visual-regression", "web-performance"] },
+  backend: { meaning: "an HTTP or RPC service", categories: ["application-framework", "runtime-fit", "backend-framework", "api-style", "validation", "auth", "rate-limiting", "retries-timeouts"] },
   crud: { meaning: "forms over a relational store", categories: ["database", "orm", "migrations", "validation", "auth"] },
   "data-pipeline": { meaning: "batch or streaming data movement", categories: ["orchestration", "storage-format", "schema-validation", "idempotency", "scheduling", "observability"] },
   async: { meaning: "queues, workers, cron or events already present or required", categories: ["queues", "background-jobs", "cron", "events"] },
@@ -36,6 +38,7 @@ export const SIGNALS = {
   mobile: { meaning: "a native or cross-platform mobile client", categories: ["mobile-framework", "mobile-release"] },
   infra: { meaning: "infrastructure as code, containers or Kubernetes present", categories: ["infrastructure", "containers", "deployment", "secrets"] },
   monorepo: { meaning: "several packages in one repository", categories: ["monorepo-tooling", "build-cache"] },
+  "framework-pain": { meaning: "a documented pain with the current framework or runtime (issues, incidents, migration discussion)", categories: ["application-framework", "runtime-fit"] },
   "agent-tooling": { meaning: "the user wants better Claude Code or Codex ergonomics for this repo", categories: ["skills", "mcp", "codemods", "architecture-enforcement", "repo-understanding"] },
 };
 
@@ -45,6 +48,8 @@ export const GUARDRAILS = {
     "Premature list (cache, queue, vector db, workflow engine, agent framework, microservices, k8s) needs a repository trigger.",
     "Every ADD, REPLACE, UPGRADE, REMOVE carries dated evidence.",
     "Approval gate before any change.",
+    "Name the kind of every entry (framework, protocol, library, platform, devtool) and compare only within a kind.",
+    "An existing framework stays unless improvement minus migration cost is clearly positive.",
   ],
   BROWNFIELD: [
     "House conventions win; REPLACE needs improvement, migration_cost and removes.",
@@ -56,7 +61,7 @@ export const GUARDRAILS = {
     "Prefer the smallest stack that serves the documented load; write load assumptions as UNCONFIRMED when undocumented.",
   ],
   "house-stack": ["REPLACE of a convention requires strong_reason=true and confidence=high, plus a why-mined reason for the convention."],
-  ai: ["No vector database, agent framework or prompt framework without a retrieval or multi-agent requirement in the documents."],
+  ai: ["No vector database, agent framework, memory system, MCP, A2A or workflow engine without a yes to the matching AI architecture question, with evidence.", "Answer all fourteen AI architecture questions in constraints.md (references/frameworks-and-emerging.md).", "Emerging AI categories are volatile: research current sources, record the date, update the radar; cached or radar entries narrow the search but never decide."],
   "stale-deps": ["UPGRADE rows first; group by major; each major cites its migration notes; no blanket upgrade."],
   "high-scale": ["Every scale-driven ADD cites the number that demands it."],
 };
@@ -111,10 +116,13 @@ export function route(input) {
   const requiresApproval = phases.includes("APPLY") || phases.includes("DOCUMENT");
   const changesAllowedBeforeGate = false;
 
+  const cats = [...categories];
   return {
     ok: true, mode, age, execution, signals,
     scanScope,
-    categories: [...categories],
+    categories: cats,
+    volatileCategories: cats.filter((c) => VOLATILE.includes(c)),
+    references: [...new Set(cats.filter((c) => c.startsWith("emerging-ai:") || ["application-framework", "runtime-fit", "ai-architecture"].includes(c)).map(() => "references/frameworks-and-emerging.md"))],
     guardrails,
     phases: phases.map((p) => ({ phase: p, reference: references[p] })),
     gate: { requiresApproval, changesAllowedBeforeGate, approvalArtefact: "approvals.json", approvalNeedsUserQuote: true },
@@ -160,6 +168,8 @@ function runTests(file) {
     if (r.ok) {
       for (const cat of c.expect.categoriesInclude || []) if (!r.categories.includes(cat)) problems.push(`missing category ${cat}`);
       for (const cat of c.expect.categoriesExclude || []) if (r.categories.includes(cat)) problems.push(`unexpected category ${cat}`);
+      for (const cat of c.expect.volatileInclude || []) if (!r.volatileCategories.includes(cat)) problems.push(`missing volatile ${cat}`);
+      if (c.expect.volatileEmpty && r.volatileCategories.length) problems.push(`volatile should be empty: ${r.volatileCategories.join(",")}`);
       for (const ph of c.expect.phasesInclude || []) if (!r.phases.some((p) => p.phase === ph)) problems.push(`missing phase ${ph}`);
       for (const ph of c.expect.phasesExclude || []) if (r.phases.some((p) => p.phase === ph)) problems.push(`unexpected phase ${ph}`);
       for (const g of c.expect.guardrailsMatch || []) if (!r.guardrails.some((x) => x.includes(g))) problems.push(`missing guardrail containing "${g}"`);

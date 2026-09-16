@@ -7,7 +7,7 @@
     {
       "name": "stacksmith",
       "description": "Scans your repo, understands what you are building, researches the current ecosystem, and recommends the smallest, fastest, most reliable and cost-efficient tech stack. Never installs before you approve.",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "author": { "name": "Harshit Badiger", "url": "https://github.com/v60samurai" },
       "source": "./",
       "category": "development",

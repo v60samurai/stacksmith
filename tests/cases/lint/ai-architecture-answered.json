@@ -1,0 +1,90 @@
+{
+ "project": "support-bot",
+ "mode": "AUDIT",
+ "age": "BROWNFIELD",
+ "signals": [
+  "ai",
+  "backend"
+ ],
+ "ai_architecture": {
+  "q1": "yes for 90% of turns; one call per message (src/ai/reply.ts)",
+  "q2": "yes; the reply carries a category enum parsed today by regex",
+  "q3": "yes; two internal lookups (order status, refund policy)",
+  "q4": "no; both tools are in-process functions with one caller",
+  "q5": "no; one assistant, no delegation in the PRD",
+  "q6": "no; follows from q5",
+  "q7": "no; a turn completes in under 10s and is retried by the client",
+  "q8": "no; conversation history lives in Postgres already",
+  "q9": "yes; PRD 6 requires citations of help-centre articles",
+  "q10": "yes; prompts change weekly (git log)",
+  "q11": "cost and latency per tenant (PRD 4)",
+  "q12": "the AI SDK's provider interface; one provider today",
+  "q13": "retry once, then a canned fallback reply; no second provider yet",
+  "q14": "routing to a human agent stays rule-based (src/routing.ts)"
+ },
+ "recommendations": [
+  {
+   "id": "r1",
+   "area": "Structured output",
+   "kind": "library",
+   "current": "regex over free text",
+   "recommendation": "AI SDK generateObject with the existing Zod schema",
+   "decision": "ADD",
+   "install_scope": "CONFIGURATION",
+   "requirement": "q2: the reply carries a category enum parsed today by regex (src/ai/reply.ts)",
+   "why": "already supported by the installed SDK",
+   "cost_impact": "none",
+   "performance_impact": "none",
+   "risk": "low",
+   "confidence": "high",
+   "score": {
+    "fit": 5,
+    "simplicity": 5,
+    "reliability": 4,
+    "performance": 4,
+    "cost": 5,
+    "dx": 4,
+    "security": 4,
+    "maturity": 4,
+    "maintainability": 5,
+    "lock_in": 4
+   },
+   "evidence": [
+    {
+     "source": "https://ai-sdk.dev/docs",
+     "checked": "2026-09-16"
+    }
+   ]
+  },
+  {
+   "id": "r2",
+   "area": "Agent interoperability (A2A)",
+   "kind": "protocol",
+   "current": "none",
+   "recommendation": "none",
+   "decision": "AVOID",
+   "install_scope": "RUNTIME_DEPENDENCY",
+   "why": "q5 and q6 are no: one assistant, no independent agents",
+   "cost_impact": "none",
+   "performance_impact": "none",
+   "risk": "low",
+   "confidence": "high"
+  },
+  {
+   "id": "r3",
+   "area": "LLM SDK",
+   "kind": "framework",
+   "slot": "llm-sdk",
+   "current": "Vercel AI SDK 5",
+   "recommendation": "Vercel AI SDK 5",
+   "decision": "KEEP",
+   "install_scope": "RUNTIME_DEPENDENCY",
+   "why": "fit",
+   "cost_impact": "none",
+   "performance_impact": "none",
+   "risk": "low",
+   "confidence": "high",
+   "alternative_considered": "provider SDK directly: loses the provider swap the PRD asks for"
+  }
+ ]
+}
