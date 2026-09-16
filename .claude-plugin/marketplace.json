@@ -1,0 +1,18 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "stacksmith",
+  "metadata": { "description": "Stacksmith: scan, understand, research, recommend the smallest right tech stack; approve before anything changes." },
+  "owner": { "name": "Harshit Badiger", "url": "https://github.com/v60samurai" },
+  "plugins": [
+    {
+      "name": "stacksmith",
+      "description": "Scans your repo, understands what you are building, researches the current ecosystem, and recommends the smallest, fastest, most reliable and cost-efficient tech stack. Never installs before you approve.",
+      "version": "0.1.0",
+      "author": { "name": "Harshit Badiger", "url": "https://github.com/v60samurai" },
+      "source": "./",
+      "category": "development",
+      "homepage": "https://github.com/v60samurai/stacksmith",
+      "tags": ["tech-stack", "dependencies", "architecture", "audit", "codex"]
+    }
+  ]
+}

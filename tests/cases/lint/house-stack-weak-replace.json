@@ -1,0 +1,5 @@
+{"project": "platform-service", "mode": "AUDIT", "age": "BROWNFIELD", "signals": ["house-stack", "backend"],
+ "recommendations": [
+  {"id": "r1", "area": "Logger", "slot": "logger", "current": "org-logger (platform template)", "recommendation": "pino", "decision": "REPLACE", "install_scope": "RUNTIME_DEPENDENCY", "improvement": "faster", "migration_cost": "40 call sites", "removes": "org-logger", "why": "pino benchmarks better", "cost_impact": "none", "performance_impact": "lower CPU per log line", "risk": "medium", "confidence": "medium", "evidence": [{"source": "https://github.com/pinojs/pino", "checked": "2026-09-16"}]},
+  {"id": "r2", "area": "HTTP framework", "slot": "http-client", "current": "org-http (platform template)", "recommendation": "org-http", "decision": "KEEP", "install_scope": "RUNTIME_DEPENDENCY", "why": "platform team owns it", "cost_impact": "none", "performance_impact": "none", "risk": "low", "confidence": "high", "alternative_considered": "Hono; not worth leaving the platform's tracing integration"}
+ ]}

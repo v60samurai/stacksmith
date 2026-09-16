@@ -1,0 +1,100 @@
+{
+ "project": "billing-api",
+ "mode": "AUDIT",
+ "age": "BROWNFIELD",
+ "signals": [
+  "backend",
+  "crud"
+ ],
+ "recommendations": [
+  {
+   "id": "r1",
+   "area": "Backend framework",
+   "slot": "http-client",
+   "current": "Fastify 5",
+   "recommendation": "Fastify 5",
+   "decision": "KEEP",
+   "install_scope": "RUNTIME_DEPENDENCY",
+   "why": "fit, maintained, team knows it",
+   "cost_impact": "none",
+   "performance_impact": "none",
+   "risk": "low",
+   "confidence": "high",
+   "alternative_considered": "Hono: faster cold start, but the service is long-running on Fly and Fastify's plugin ecosystem is in use"
+  },
+  {
+   "id": "r2",
+   "area": "ORM",
+   "slot": "orm",
+   "current": "Drizzle 0.36",
+   "recommendation": "Drizzle 0.36",
+   "decision": "KEEP",
+   "install_scope": "RUNTIME_DEPENDENCY",
+   "why": "typed SQL, migrations in repo",
+   "cost_impact": "none",
+   "performance_impact": "none",
+   "risk": "low",
+   "confidence": "high",
+   "alternative_considered": "Prisma: heavier client, no gain for this schema"
+  },
+  {
+   "id": "r3",
+   "area": "Dead-code analysis",
+   "current": "none",
+   "recommendation": "knip",
+   "decision": "ADD",
+   "install_scope": "DEV_DEPENDENCY",
+   "requirement": "CLAUDE.md asks for zero unused exports before merge; the current check is manual",
+   "why": "one command, CI-friendly, no runtime footprint",
+   "cost_impact": "none",
+   "performance_impact": "adds ~8s to CI",
+   "risk": "low",
+   "confidence": "high",
+   "score": {
+    "fit": 5,
+    "simplicity": 5,
+    "reliability": 4,
+    "performance": 4,
+    "cost": 5,
+    "dx": 4,
+    "security": 5,
+    "maturity": 4,
+    "maintainability": 5,
+    "lock_in": 5
+   },
+   "evidence": [
+    {
+     "source": "https://www.npmjs.com/package/knip",
+     "checked": "2026-09-16",
+     "note": "5.x, weekly releases"
+    }
+   ]
+  },
+  {
+   "id": "r4",
+   "area": "Caching",
+   "current": "none",
+   "recommendation": "Redis",
+   "decision": "AVOID",
+   "install_scope": "INFRASTRUCTURE",
+   "why": "p95 is 40ms on Postgres; no cache requirement exists",
+   "cost_impact": "would add a managed instance",
+   "performance_impact": "none needed",
+   "risk": "low",
+   "confidence": "high"
+  },
+  {
+   "id": "r5",
+   "area": "CI build step",
+   "current": "CI never runs the build",
+   "recommendation": "add `pnpm build` to the existing workflow job",
+   "decision": "BUILD",
+   "install_scope": "CI",
+   "why": "one line in the file that already exists",
+   "cost_impact": "+20s CI",
+   "performance_impact": "none",
+   "risk": "low",
+   "confidence": "high"
+  }
+ ]
+}

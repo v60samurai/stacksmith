@@ -1,0 +1,5 @@
+{"project": "x", "mode": "AUDIT", "age": "BROWNFIELD", "signals": [],
+ "recommendations": [
+  {"id": "r1", "area": "Thing", "current": "a", "recommendation": "b", "decision": "SWAP", "install_scope": "NPM", "why": "", "cost_impact": "", "performance_impact": "", "risk": "none", "confidence": "sure"},
+  {"id": "r1", "area": "Other", "current": "a", "recommendation": "b", "decision": "BUILD", "install_scope": "RUNTIME_DEPENDENCY", "why": "x", "cost_impact": "x", "performance_impact": "x", "risk": "low", "confidence": "low"}
+ ]}

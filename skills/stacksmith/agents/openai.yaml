@@ -1,0 +1,3 @@
+interface:
+  display_name: "Stacksmith"
+  short_description: "Review and right-size a project's tech stack; approval before any change"

@@ -1,0 +1,11 @@
+{
+  "name": "stacksmith",
+  "version": "0.1.0",
+  "description": "Scans your repo, understands what you are building, researches the current ecosystem, and recommends the smallest, fastest, most reliable and cost-efficient tech stack. Never installs before you approve.",
+  "author": { "name": "Harshit Badiger", "url": "https://github.com/v60samurai" },
+  "homepage": "https://github.com/v60samurai/stacksmith",
+  "repository": "https://github.com/v60samurai/stacksmith",
+  "license": "MIT",
+  "keywords": ["tech-stack", "dependencies", "architecture", "audit", "claude-code", "codex", "skill"],
+  "skills": ["./skills/stacksmith"]
+}
